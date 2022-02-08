@@ -33,3 +33,12 @@ libtrezor.a:
 
 vendor:
 	git submodule update --init --recursive
+
+test_emu: ## run integration tests
+	./script/test $(TESTOPTS)
+
+test_emu_ui: ## run ui integration tests
+	./script/test --ui=test --ui-check-missing $(TESTOPTS)
+
+test_emu_ui_record: ## record and hash screens for ui integration tests
+	./script/test --ui=record --ui-check-missing $(TESTOPTS)
