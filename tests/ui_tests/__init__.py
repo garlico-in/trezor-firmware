@@ -22,6 +22,10 @@ FILE_HASHES: Dict[str, str] = {}
 ACTUAL_HASHES: Dict[str, str] = {}
 PROCESSED: Set[str] = set()
 
+# T1/TT, to be set in screen_recording(), as we do not know it beforehand
+# TODO: it is not the cleanest, we could create a class out of this file
+MODEL = ""
+
 
 def get_test_name(node_id: str) -> str:
     # Test item name is usually function name, but when parametrization is used,
@@ -99,10 +103,18 @@ def _process_tested(fixture_test_path: Path, test_name: str) -> None:
 
 @contextmanager
 def screen_recording(
-    client: Client, request: pytest.FixtureRequest
+    client: Client, request: pytest.FixtureRequest, model: str
 ) -> Generator[None, None, None]:
     test_ui = request.config.getoption("ui")
     test_name = get_test_name(request.node.nodeid)
+
+    # Differentiating test names between T1 and TT
+    test_name = f"{model}_{test_name}"
+
+    # Making the model global for other functions
+    global MODEL
+    MODEL = model
+
     screens_test_path = SCREENS_DIR / test_name
 
     if test_ui == "record":
@@ -133,7 +145,11 @@ def screen_recording(
 
 
 def list_missing() -> Set[str]:
-    return set(FILE_HASHES.keys()) - PROCESSED
+    # Only listing the ones for the current model
+    relevant_cases = {
+        case for case in FILE_HASHES.keys() if case.startswith(f"{MODEL}_")
+    }
+    return relevant_cases - PROCESSED
 
 
 def read_fixtures() -> None:
@@ -153,7 +169,12 @@ def write_fixtures_suggestion(remove_missing: bool) -> None:
 
 def _get_fixtures_content(fixtures: Dict[str, str], remove_missing: bool) -> str:
     if remove_missing:
-        fixtures = {i: fixtures[i] for i in PROCESSED}
+        # Not removing the ones for different model
+        nonrelevant_cases = {
+            f: h for f, h in FILE_HASHES.items() if not f.startswith(f"{MODEL}_")
+        }
+        processed_fixtures = {i: fixtures[i] for i in PROCESSED}
+        fixtures = {**nonrelevant_cases, **processed_fixtures}
     else:
         fixtures = fixtures
 
