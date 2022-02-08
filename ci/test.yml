@@ -444,7 +444,7 @@ legacy btconly test:
     EMULATOR_BINARY: "firmware/trezor-bitcoinonly.elf"
     TREZOR_PYTEST_SKIP_ALTCOINS: 1
   script:
-    - nix-shell --run "poetry run make -C legacy test_emu_ui | ts -s"
+    - nix-shell --run "poetry run make -C legacy test_emu | ts -s"
   artifacts:
     name: "$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     paths:
