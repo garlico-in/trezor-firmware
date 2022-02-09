@@ -155,9 +155,7 @@ def client(
         _raw_client.clear_session()
 
     if test_ui:
-        # Setting the right model for UI tests - TT or T1
-        model = f"T{_raw_client.features.model}"
-        with ui_tests.screen_recording(_raw_client, request, model):
+        with ui_tests.screen_recording(_raw_client, request):
             yield _raw_client
     else:
         yield _raw_client
