@@ -10,10 +10,18 @@ from tests.ui_tests import read_fixtures  # isort:skip
 read_fixtures()
 from tests.ui_tests import _hash_files, FILE_HASHES, SCREENS_DIR  # isort:skip
 
+# As in CI we are running T1 and TT tests separately, there will
+# always be the other model missing.
+# Therefore, choosing just the cases for our model.
+if len(sys.argv) > 1 and sys.argv[1].lower() == "t1":
+    model = "T1"
+else:
+    model = "TT"
+model_file_hashes = {k: v for k, v in FILE_HASHES.items() if k.startswith(f"{model}_")}
 
-for test_case in FILE_HASHES.keys():
+for test_case in model_file_hashes.keys():
     recorded_dir = SCREENS_DIR / test_case / "recorded"
-    expected_hash = FILE_HASHES[test_case]
+    expected_hash = model_file_hashes[test_case]
     actual_hash = _hash_files(recorded_dir)
     assert expected_hash == actual_hash
     shutil.make_archive(
