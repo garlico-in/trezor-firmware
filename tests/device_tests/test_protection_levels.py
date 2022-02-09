@@ -218,7 +218,6 @@ def test_wipe_device(client: Client):
 
 @pytest.mark.setup_client(uninitialized=True)
 @pytest.mark.skip_t2
-@pytest.mark.skip_ui
 def test_reset_device(client: Client):
     assert client.features.pin_protection is False
     assert client.features.passphrase_protection is False

@@ -107,8 +107,8 @@ def client(
         request.session.shouldstop = "Failed to communicate with Trezor"
         pytest.fail("Failed to communicate with Trezor")
 
-    if test_ui and _raw_client.features.model == "T":
-        # we need to reseed before the wipe for TT
+    if test_ui:
+        # we need to reseed before the wipe
         _raw_client.debug.reseed(0)
 
     if sd_marker:
