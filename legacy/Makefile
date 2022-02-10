@@ -34,6 +34,9 @@ libtrezor.a:
 vendor:
 	git submodule update --init --recursive
 
+build_unix: ## build unix port
+	EMULATOR=1 DEBUG_LINK=1 && ./script/setup && ./script/cibuild
+
 test_emu: ## run integration tests
 	./script/test $(TESTOPTS)
 
