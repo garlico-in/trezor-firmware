@@ -64,6 +64,8 @@ def test_apply_auto_lock_delay(client: Client):
     with client:
         client.use_pin_sequence([PIN4])
         client.set_expected_responses([pin_request(client), messages.Address])
+        # There are more PIN screens, need to reseed again
+        client.debug.reseed(0)
         get_test_address(client)
 
 

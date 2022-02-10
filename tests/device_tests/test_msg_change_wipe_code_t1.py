@@ -124,6 +124,8 @@ def test_set_wipe_code_mismatch(client: Client):
                 messages.Failure(code=messages.FailureType.WipeCodeMismatch),
             ]
         )
+        # There are more PIN screens, need to reseed again
+        client.debug.reseed(0)
         with pytest.raises(exceptions.TrezorFailure):
             device.change_wipe_code(client)
 

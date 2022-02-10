@@ -64,6 +64,8 @@ def test_set_pin(client: Client):
                 messages.Features,
             ]
         )
+        # There are more PIN screens, need to reseed again
+        client.debug.reseed(0)
         device.change_pin(client)
 
     # Check that there's PIN protection now
@@ -91,6 +93,8 @@ def test_change_pin(client: Client):
                 messages.Features,
             ]
         )
+        # There are more PIN screens, need to reseed again
+        client.debug.reseed(0)
         device.change_pin(client)
 
     # Check that there's still PIN protection now
@@ -116,6 +120,8 @@ def test_remove_pin(client: Client):
                 messages.Features,
             ]
         )
+        # There are more PIN screens, need to reseed again
+        client.debug.reseed(0)
         device.change_pin(client, remove=True)
 
     # Check that there's no PIN protection now
@@ -140,6 +146,8 @@ def test_set_mismatch(client: Client):
                 messages.Failure,
             ]
         )
+        # There are more PIN screens, need to reseed again
+        client.debug.reseed(0)
         device.change_pin(client)
 
     # Check that there's still no PIN protection now
@@ -164,6 +172,8 @@ def test_change_mismatch(client: Client):
                 messages.Failure,
             ]
         )
+        # There are more PIN screens, need to reseed again
+        client.debug.reseed(0)
         device.change_pin(client)
 
     # Check that there's still old PIN protection
