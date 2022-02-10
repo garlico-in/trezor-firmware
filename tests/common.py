@@ -25,6 +25,8 @@ import requests
 from trezorlib import btc, tools
 from trezorlib.messages import ButtonRequestType as B
 
+from .btx_tx import Tx
+
 # fmt: off
 #                1      2     3    4      5      6      7     8      9    10    11    12
 MNEMONIC12 = "alcohol woman abuse must during monitor noble actual mixed trade anger aisle"
@@ -227,16 +229,17 @@ def get_test_address(client):
     return btc.get_address(client, "Testnet", TEST_ADDRESS_N)
 
 
-def assert_tx_matches(
-    serialized_tx: bytes, hash_link: str, tx_hex: str = None, segwit_hash: str = None
-) -> None:
+def assert_tx_matches(serialized_tx: bytes, hash_link: str, tx_hex: str = None) -> None:
     """Verifies if a transaction is correctly formed."""
-    # Segwit transactions have different tx_id and tx_hash, so we cannot get
-    # the tx_hash from the link (which has tx_id inside it)
-    if segwit_hash:
-        assert tools.tx_hash(serialized_tx).hex() == segwit_hash
+    tx_id = hash_link.split("/")[-1]
+
+    # In case of the transaction being segwit, we need to calculate
+    # its tx_id specially
+    parsed_tx = Tx.parse(serialized_tx)
+    if parsed_tx.segwit:
+        assert tx_id == parsed_tx.id()
     else:
-        assert tools.tx_hash(serialized_tx).hex() == hash_link.split("/")[-1]
+        assert tx_id == tools.tx_hash(serialized_tx)
 
     if tx_hex:
         assert serialized_tx.hex() == tx_hex
