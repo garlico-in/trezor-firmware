@@ -75,7 +75,6 @@ class DebugLink:
         self.model: Optional[str] = None
 
         # For T1 screenshotting functionality in DebugUI
-        # TODO: consider creating ScreenshotT1 class instead of this
         self.t1_take_screenshots = False
         self.t1_screenshot_directory: Optional[Path] = None
         self.t1_screenshot_counter = 0
@@ -247,6 +246,14 @@ class DebugLink:
     def erase_sd_card(self, format: bool = True) -> messages.Success:
         return self._call(messages.DebugLinkEraseSdCard(format=format))
 
+    def take_t1_screenshot_if_relevant(self) -> None:
+        """Conditionally take screenshots on T1.
+
+        TT handles them differently, see debuglink.start_recording.
+        """
+        if self.model == "1" and self.t1_take_screenshots:
+            self.save_screenshot_for_t1()
+
     def save_screenshot_for_t1(self) -> None:
         layout = self.state().layout
         assert layout is not None
@@ -308,10 +315,7 @@ class DebugUI:
         ] = None
 
     def button_request(self, br: messages.ButtonRequest) -> None:
-        # Conditionally taking screenshots on T1
-        # (TT handles them differently - see debuglink.start_recording)
-        if self.debuglink.model == "1" and self.debuglink.t1_take_screenshots:
-            self.debuglink.save_screenshot_for_t1()
+        self.debuglink.take_t1_screenshot_if_relevant()
 
         if self.input_flow is None:
             if br.code == messages.ButtonRequestType.PinEntry:
@@ -331,6 +335,8 @@ class DebugUI:
                 self.input_flow = self.INPUT_FLOW_DONE
 
     def get_pin(self, code: Optional["PinMatrixRequestType"] = None) -> str:
+        self.debuglink.take_t1_screenshot_if_relevant()
+
         if self.pins is None:
             raise RuntimeError("PIN requested but no sequence was configured")
 
@@ -340,6 +346,9 @@ class DebugUI:
             raise AssertionError("PIN sequence ended prematurely")
 
     def get_passphrase(self, available_on_device: bool) -> str:
+        # TODO: find out why the screenshots here are freezing the T1 emulator
+        # self.debuglink.take_t1_screenshot_if_relevant()
+
         return self.passphrase
 
 
