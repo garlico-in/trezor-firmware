@@ -260,7 +260,7 @@ class Script:
             # convert the current byte to an integer
             current_byte = current[0]
             # if the current byte is between 1 and 75 inclusive
-            if current_byte >= 1 and current_byte <= 75:
+            if 1 <= current_byte <= 75:
                 # we have an cmd set n to be the current byte
                 n = current_byte
                 # add the next n bytes as an cmd
@@ -303,11 +303,11 @@ class Script:
                 if length < 75:
                     # turn the length into a single byte integer
                     result += int_to_little_endian(length, 1)
-                elif length > 75 and length < 0x100:
+                elif 75 < length < 0x100:
                     # 76 is pushdata1
                     result += int_to_little_endian(76, 1)
                     result += int_to_little_endian(length, 1)
-                elif length >= 0x100 and length <= 520:
+                elif 0x100 <= length <= 520:
                     # 77 is pushdata2
                     result += int_to_little_endian(77, 1)
                     result += int_to_little_endian(length, 2)

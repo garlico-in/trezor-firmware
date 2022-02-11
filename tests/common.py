@@ -239,7 +239,7 @@ def assert_tx_matches(serialized_tx: bytes, hash_link: str, tx_hex: str = None) 
     if parsed_tx.segwit:
         assert tx_id == parsed_tx.id()
     else:
-        assert tx_id == tools.tx_hash(serialized_tx)
+        assert tx_id == tools.tx_hash(serialized_tx).hex()
 
     if tx_hex:
         assert serialized_tx.hex() == tx_hex
