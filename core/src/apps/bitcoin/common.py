@@ -130,13 +130,13 @@ def encode_bech32_address(prefix: str, witver: int, script: bytes) -> str:
 def decode_bech32_address(prefix: str, address: str) -> tuple[int, bytes]:
     witver, raw = bech32.decode(prefix, address)
     if witver not in _BECH32_WITVERS:
-        raise wire.ProcessError("Invalid address witness program")
+        raise wire.DataError("Invalid address witness program")
     assert witver is not None
     assert raw is not None
     # check that P2TR address encodes a valid BIP340 public key
-    if witver == 1 and len(raw) == 32 and not bip340.verify_publickey(bytes(raw)):
-        raise wire.ProcessError("Invalid Taproot script")
-    return witver, bytes(raw)
+    if witver == 1 and not bip340.verify_publickey(raw):
+        raise wire.DataError("Invalid Taproot witness program")
+    return witver, raw
 
 
 def input_is_segwit(txi: TxInput) -> bool:
