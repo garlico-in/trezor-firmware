@@ -194,8 +194,9 @@ def test_get_public_key(client: Client):
                 messages.PublicKey,
             ]
         )
-        # There are more PIN screens, need to reseed again
-        client.debug.reseed(0)
+        # There are more PIN screens, need to reseed again (only for T1)
+        if client.features.model == "1":
+            client.debug.reseed(0)
         btc.get_public_node(client, [])
 
 
@@ -210,8 +211,9 @@ def test_get_address(client: Client):
                 messages.Address,
             ]
         )
-        # There are more PIN screens, need to reseed again
-        client.debug.reseed(0)
+        # There are more PIN screens, need to reseed again (only for T1)
+        if client.features.model == "1":
+            client.debug.reseed(0)
         get_test_address(client)
 
 
